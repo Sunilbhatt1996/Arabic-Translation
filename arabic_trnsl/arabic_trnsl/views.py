@@ -4,7 +4,8 @@ import speech_recognition as sr
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
-
+from vosk import Model, KaldiRecognizer
+import pyaudio
 
 def index(request):
 
@@ -23,6 +24,7 @@ def translation(request):
         from_lang = request.GET.get('langpair').split('|')[0]
         to_lang = request.GET.get('langpair').split('|')[1]
         # Initialize the translation pipeline
+        print(text)
 
 
         if to_lang==from_lang:
@@ -37,3 +39,18 @@ def translation(request):
         print(translated_text)
         return JsonResponse({'translatedText': translated_text[0]['translation_text']})
     
+
+def voice_to_req(request):
+    model = Model("vosk-model-en-in-0.5")
+    recognizer = KaldiRecognizer(model, 16000)
+        
+    mic = pyaudio.PyAudio()
+    stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8192)
+    stream.start_stream()
+    while True:
+            data = stream.read(4096)
+            
+            if recognizer.AcceptWaveform(data):
+                text = recognizer.Result()
+                print(f"' {text[14:-3]} '")
+                return JsonResponse({'translatedText': f"' {text[14:-3]} '"})
