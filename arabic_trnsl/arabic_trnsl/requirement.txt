@@ -1,7 +1,13 @@
-django
+django-rest-frameword
 django-cors-headers
-pytorch
+
 pyaudio
-transformers
-SpeechRecognition
+sacremoses
+sentencepiece
 setuptools
+SpeechRecognition
+torch
+torchvision
+torchaudio
+transformers
+vosk
